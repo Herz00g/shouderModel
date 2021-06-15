@@ -18,13 +18,12 @@ This folder contains the musculoskeletal model of the human shoulder and elbow t
 ## Authors
 
 * David Ingram (EPFL-LA)
-Development of the 1st version of the model, during his PhD thesis.
-https://infoscience.epfl.ch/record/204692
+   * Development of the 1st version of the model, during his PhD thesis.
+   * https://infoscience.epfl.ch/record/204692
 
 * Ehsan Sarshari (EPFL-LA/LBO)
-
-Development of the 2nd version of the model, during his PhD thesis.
-https://infoscience.epfl.ch/record/256396
+   * Development of the 2nd version of the model, during his PhD thesis.
+   * https://infoscience.epfl.ch/record/256396
 
 ## Contributors
 
