@@ -1,35 +1,33 @@
 # EPFL upper limb musculoskeletal model
+
 This upper limb musculoskeletal model was developed at the EPFL by David Ingram and Ehsan Sarshari. It is implemented in Matlab. The details are explained in README files within each of the following subfolders.
 
 ## Getting Started
+
 The following instructions will get you a copy of the project locally.
+
 * Clone the repository locally
 * Start matlab and set path one of the model's directorie (see below).
-
-## Prerequisites
-The model requires Matlab 2015 with the following toolboxes.
 
 ## Description of the model
 
 ShoulderModel
 
-This folder contains the musculoskeletal model of the human shoulder and elbow that can replicate healthy subjects and patients with anatomical total shoulder arthroplasty (aTSA).
-
-
-## ShoulderModel_pre_post_processing
-This folder contains scripts and documentations that allow/explain transformation of the patients data obtained from the preoperative Blueprint software and CTs into inputs that are consistent and readable by different versions of the MSM model.
-
+This folder contains the musculoskeletal model of the human shoulder and elbow that can replicate healthy subjects and patients with osteoarthritis.
 
 ## Authors
+
 * David Ingram (EPFL-LA)
 Development of the 1st version of the model, during his PhD thesis.
 https://infoscience.epfl.ch/record/204692
 
 * Ehsan Sarshari (EPFL-LA/LBO)
+
 Development of the 2nd version of the model, during his PhD thesis.
 https://infoscience.epfl.ch/record/256396
 
 ## Contributors
+
 * Christoph Engelhardt (EPFL-LBO): Performed anatomical measurements on MRI of healthy volunteer.
 * Yasmine Boulanaache  (EPFL-LBO): Performed anatomical measurements on MRI of healthy volunteer.
 * Matteo Mancuso (EPFL-LMAM): Performed kinematics and EMG measurements on healthy volunteer.
@@ -39,6 +37,7 @@ https://infoscience.epfl.ch/record/256396
 * Philippe Mullhaupt (EPFL-LA): PhDs' supervision
 
 ## Bibliography
+
 These models are described in the following journal articles.
 
 
@@ -58,6 +57,7 @@ DOI: 10.1016/j.medengphy.2017.08.013
 * Engelhardt, C., Farron, A., Becce, F., Place, N., Pioletti, D.P., Terrier, A.
 Effects of glenoid inclination and acromion index on humeral head translation and glenoid articular cartilage strain
 (2017) Journal of Shoulder and Elbow Surgery, 26 (1), pp. 157-164.
+
 DOI: 10.1016/j.jse.2016.05.031
 
 * Engelhardt, C., Ingram, D., Müllhaupt, P., Farron, A., Becce, F., Pioletti, D., Terrier, A.
