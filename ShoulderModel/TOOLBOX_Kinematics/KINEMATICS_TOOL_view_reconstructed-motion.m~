@@ -1,0 +1,131 @@
+%{
+--------------------------------------------------------------------------
+   SCRIPT FOR RUNNING A VIDEO OF THE RECONSTRUCTED MOTION TOGETHER WITH THE
+   MEASURED MOTION (IN BLUE AND GREEN)
+--------------------------------------------------------------------------
+
+%}
+
+%--------------------------------------------------------------------------
+% define where to show the motion
+%--------------------------------------------------------------------------
+set(KRHandle, 'currentaxes', KRPlotHandles.View_Motion_Axes); hold on;
+
+%--------------------------------------------------------------------------
+% define the bony landmarks
+%--------------------------------------------------------------------------
+% run through the motion while skipping some points.
+for i = 1:length(SSDATA.Measured_Kinematics.IJ)
+    
+    %--------------------------------------------------------------------------
+    % define the wireframe of the reconstructed motion
+    %--------------------------------------------------------------------------
+    % define the generalized coordinate vector
+    q = SSDATA.Joint_Angle_Reconstruction(:,i);
+
+    % define the rotation matrices from the generalized coordinates vector (Euler angles)
+    Rmat = MAIN_TOOL_geometry_functions('Build Rotation Matrices From Euler Angles', q, BLDATA);
+        Rc = Rmat(:,1:3);
+        Rs = Rmat(:,4:6);
+        Rh = Rmat(:,7:9);
+        Ru = Rmat(:,10:12);
+        Rr = Rmat(:,13:15);
+
+    % Get Initial Rotation Matrices
+    Rc_initial = BLDATA.Initial_Matrices_L2A.Rc;
+    Rs_initial = BLDATA.Initial_Matrices_L2A.Rs;
+    Rh_initial = BLDATA.Initial_Matrices_L2A.Rh;
+    Ru_initial = BLDATA.Initial_Matrices_L2A.Ru;
+    Rr_initial = BLDATA.Initial_Matrices_L2A.Rr;
+    
+    % Get all initial configurations of the landmarks
+    IJ_initial = BLDATA.Initial_Points.IJ;
+    PX_initial = BLDATA.Initial_Points.PX;
+    T8_initial = BLDATA.Initial_Points.T8;
+    C7_initial = BLDATA.Initial_Points.C7;
+    SC_initial = BLDATA.Initial_Points.SC;
+    AC_initial = BLDATA.Initial_Points.AC;
+    AA_initial = BLDATA.Initial_Points.AA;
+    TS_initial = BLDATA.Initial_Points.TS;
+    AI_initial = BLDATA.Initial_Points.AI;
+    GH_initial = BLDATA.Initial_Points.GH;
+    HU_initial = BLDATA.Initial_Points.HU;
+    EL_initial = BLDATA.Initial_Points.EL;
+    EM_initial = BLDATA.Initial_Points.EM;
+    CP_initial = BLDATA.Initial_Points.CP;
+    US_initial = BLDATA.Initial_Points.US;
+    RS_initial = BLDATA.Initial_Points.RS;
+    
+    % define the configurations of the landmarks
+    IJ = IJ_initial;
+    PX = PX_initial;
+    T8 = T8_initial;
+    C7 = C7_initial;
+    SC = SC_initial;
+    AC = Rc*Rc_initial'*(AC_initial - SC_initial) + SC_initial;
+    AA = Rs*Rs_initial'*(AA_initial - AC_initial) + AC;
+    TS = Rs*Rs_initial'*(TS_initial - AC_initial) + AC;
+    AI = Rs*Rs_initial'*(AI_initial - AC_initial) + AC;
+    GH = Rs*Rs_initial'*(GH_initial - AC_initial) + AC;
+    HU = Rh*Rh_initial'*(HU_initial - GH_initial) + GH;
+    EL = Rh*Rh_initial'*(EL_initial - GH_initial) + GH;
+    EM = Rh*Rh_initial'*(EM_initial - GH_initial) + GH;
+    US = Ru*Ru_initial'*(US_initial - HU_initial) + HU;
+    CP = Rh*Rh_initial'*(CP_initial - GH_initial) + GH;
+    RS = Rr*Rr_initial'*(RS_initial - CP_initial) + CP;
+    
+    % Build the bone wire frames for plotting purposes
+    Reconstructed_WF_Thorax_      = [IJ, PX, T8, C7, IJ];
+    Reconstructed_WF_Clavicula    = [SC, AC];
+    Reconstructed_WF_Scapula      = [AC, AA, TS, AI, GH, AC];
+    BReconstructed_WF_Humerus     = [GH, HU, EL, EM];
+    Reconstructed_WF_Ulna         = [CP, HU, EM, US];
+    Reconstructed_WF_Radius       = [CP, RS];
+    
+    %--------------------------------------------------------------------------
+    % define the wireframe of the measured motion
+    %--------------------------------------------------------------------------
+    Measured_WF_Thorax_     = [SSDATA.Measured_Kinematics.IJ(:,i),...
+                               SSDATA.Measured_Kinematics.PX(:,i),...
+                               SSDATA.Measured_Kinematics.T8(:,i),...
+                               SSDATA.Measured_Kinematics.C7(:,i),...
+                               SSDATA.Measured_Kinematics.IJ(:,i)];
+                           
+    Measured_WF_Clavicula   = [SSDATA.Measured_Kinematics.SC(:,i),...
+                               SSDATA.Measured_Kinematics.AC(:,i)];
+                           
+    Measured_WF_Scapula     = [SSDATA.Measured_Kinematics.AC(:,i),...
+                               SSDATA.Measured_Kinematics.AA(:,i),...
+                               SSDATA.Measured_Kinematics.TS(:,i),...
+                               SSDATA.Measured_Kinematics.AI(:,i),...
+                               SSDATA.Measured_Kinematics.GH(:,i),...
+                               SSDATA.Measured_Kinematics.AC(:,i)];
+                           
+    Measured_WF_Humerus     = [SSDATA.Measured_Kinematics.GH(:,i),...
+                               SSDATA.Measured_Kinematics.HU(:,i),...
+                               SSDATA.Measured_Kinematics.EL(:,i),...
+                               SSDATA.Measured_Kinematics.EM(:,i)];
+                           
+    Measured_WF_Ulna        = [SSDATA.Measured_Kinematics.CP,...
+                               SSDATA.Measured_Kinematics.HU, EM, US];
+    Measured_WF_Radius      = [CP, RS];
+    
+    
+    
+    
+    
+    drawnow;
+end
+
+% Clear some variables
+clear SC AC AA TS AI GH HU EL EM US RS CP Rmat Rc Rs Rh Ru Rr;
+
+% When Motion is over, reset the current BLDATA to initial
+% Get the Current Rotation Matrices
+Rmat = MAIN_TOOL_geometry_functions('Build Rotation Matrices From Euler Angles', KEDATA.Joint_Angle_Evolution(:,1), BLDATA);
+
+% Update the current configuration
+BLDATA = MAIN_TOOL_geometry_functions(...
+    'Update Current Bony Landmark Data from Joint Rotation Matrices', Rmat(:,1:3), Rmat(:,4:6), Rmat(:,7:9), Rmat(:,10:12), Rmat(:,13:15), BLDATA);
+
+clear Rmat i;

@@ -1,0 +1,173 @@
+function CBScript = SUBJECT_TOOL_script_generator(task)
+%{
+Uicontrol Callback Script Generator for Subject Specific Tool GUI.
+--------------------------------------------------------------------------
+Syntax :
+CBScript = SUBJECT_TOOL_script_generator(task)
+--------------------------------------------------------------------------
+File Description :
+This function generates the uicontrol callback scripts for the subject
+specific tool GUI. The task input variable inidicates which script to return. 
+
+List of Scripts :
+          Task 1: Close Subject Tool
+          Task 2: Show PCSA From List
+          Task 3: Update Muscle PCSA
+          Task 4: Show Glenoid Orientation
+          Task 5: Update Glenoid Orientation
+          Task 6: Load Measured Kinematics
+          Task 7: Update Subject Weight
+          Task 8: Update Ellipsoid
+          Task 9: VISUALIZATION
+          Task 10: SCALING OVERWRITE
+          Task 11: RESET TO GENERIC MODEL
+          Task 12: Help
+--------------------------------------------------------------------------
+%}
+% Initialise the output
+CBScript = [];
+
+%--------------------------------------------------------------------------
+% Task 1 : Close the Subject GUI
+% Closes the subject specific tool GUI and deletes the variables that are no
+% longer needed.
+%--------------------------------------------------------------------------
+if isequal(task, 'Close Subject Tool')
+    CBScript = [...
+       'clear SHandle;',...
+       'clear SPlotHandles;',...
+       'close gcf;'];
+   
+%--------------------------------------------------------------------------
+% Task 2 : Show the PCSA data of each muscle selected from the popup menu
+%--------------------------------------------------------------------------
+elseif isequal(task, 'Show PCSA From List')
+    CBScript =   'SUBJECT_TOOL_Show_PCSA(SGUIHandle, MWDATA);';
+    
+%--------------------------------------------------------------------------
+% Task 3 : Update the PCSA and FMAX of each selected muscle based on the
+% value specified by the user
+%--------------------------------------------------------------------------
+elseif isequal(task, 'Update Muscle PCSA')
+    CBScript = 'MWDATA = SUBJECT_TOOL_Update_PCSA(SGUIHandle, MWDATA);';
+    
+%--------------------------------------------------------------------------
+% Task 4 : Show glenoid orientation data in terms of glenoid version,
+% inclination, or glenoid fossa center in the scapula coordinate system.
+% Note: the scapula coordinate system here is different than the one used
+% for kinematic and dynamic model of the shoulder. It's adapted from A. Terrier
+% , et al, Bone Joint J 2014;96-B:513?18 in order to be consistent with the
+% patient specific data.
+%--------------------------------------------------------------------------
+elseif isequal(task, 'Show Glenoid Orientation')
+    CBScript = 'SUBJECT_TOOL_Show_Glenoid_Orientation(SGUIHandle, BLDATA);';
+    
+%--------------------------------------------------------------------------
+% Task 5 : Update the glenoid inclination values. These are just saved
+% here. Their effects on model will be accounted for in the Task 7
+%--------------------------------------------------------------------------
+elseif isequal(task, 'Update Glenoid Orientation')
+    CBScript = 'BLDATA = SUBJECT_TOOL_Update_Glenoid_Orientation(SGUIHandle, BLDATA);'; 
+
+%--------------------------------------------------------------------------
+% Task 6 : Load Measured Kinematics
+%--------------------------------------------------------------------------
+elseif isequal(task, 'Load Measured Kinematics')
+    CBScript = 'SSDATA = SUBJECT_TOOL_Load_Kinematics(SGUIHandle);';
+    
+%--------------------------------------------------------------------------
+% Task 7 : Update the inertial parameters and bony landmarks and also the
+% muscle architecture parameters as well as musculotendon parameters
+%--------------------------------------------------------------------------
+elseif isequal(task, 'Update Subject Weight')
+    CBScript = ['[DYDATA, MWDATA] = SUBJECT_TOOL_Update_Weight(SGUIHandle, DYDATA, MWDATA);'...
+                 'BLDATA = SUBJECT_TOOL_build_data_bony_landmark(BLDATA, DYDATA);'...
+                 'MWDATA = SUBJECT_TOOL_build_data_muscle_wrapping(BLDATA,MWDATA,DYDATA);'...
+                 'disp(''The model skeletal morphology and muscle architecture and propertis were scaled'');'];
+
+%--------------------------------------------------------------------------
+% Task 8 : Update ricage ellipsoid and also the glenoid cone and also
+% rederive the equations of motion of the model (dynamic model)
+%--------------------------------------------------------------------------
+elseif isequal(task, 'Update Ellipsoid')
+    CBScript = ['REDATA = SUBJECT_TOOL_build_data_ribcage_ellipsoid(BLDATA, DYDATA);'...
+                'DYDATA = SUBJECT_TOOL_build_data_dynamics(REDATA, BLDATA, DYDATA);'...
+                'disp(''Ribcage ellipsoides and dynamic model were scaled...'');'];
+            
+%--------------------------------------------------------------------------
+% Task 9 : Visualaize the scaled model
+%--------------------------------------------------------------------------
+elseif isequal(task, 'VISUALIZATION')
+    CBScript = 'SPlotHandles = SUBJECT_TOOL_Visualization(SHandle, SPlotHandles, BLDATA, DYDATA, REDATA);';
+
+%--------------------------------------------------------------------------
+% Task 10 : SCALING OVERWRITE for the moment does not work but the idea is
+% to overwrite the scaling performed based on the subject's weight and
+% height by the scalings from imported measured kinematics.
+%--------------------------------------------------------------------------
+elseif isequal(task, 'SCALING OVERWRITE')
+    %CBScript = 'SUBJECT_TOOL_Overwirte_Scaling(SGUIHandle);';
+    
+%--------------------------------------------------------------------------
+% Task 11 : Reset to generic model
+%--------------------------------------------------------------------------
+elseif isequal(task, 'RESET TO GENERIC MODEL')
+    CBScript = ['set(SGUIHandle.Gender_Selection.Gender,''Value'', 1);',...
+               'set(SGUIHandle.Weight_Selection.Weight,''string'', ''85.5'');',...
+               'set(SGUIHandle.Height_Selection.Height,''string'', ''1.86'');',...
+               'BLDATA = MAIN_INITIALISATION_build_data_bony_landmark();',...
+               'MWDATA = MAIN_INITIALISATION_build_data_muscle_wrapping(BLDATA);',...
+               'set(SGUIHandle.PCSA_Selection.MuscleName,''Value'', 1);',...
+               'set(SGUIHandle.Glenoid_Orientations.Popupmenu,''Value'', 1);',...
+               'SUBJECT_TOOL_Show_PCSA(SGUIHandle, MWDATA);',...
+               'SUBJECT_TOOL_Clear_WireFrame(SPlotHandles);',...
+               'SUBJECT_TOOL_Show_Glenoid_Orientation(SGUIHandle, BLDATA);',...
+               'REDATA = MAIN_INITIALISATION_build_data_ribcage_ellipsoid(BLDATA);',...
+               'DYDATA = MAIN_INITIALISATION_build_data_dynamics(REDATA, BLDATA);'];    
+
+%--------------------------------------------------------------------------
+% Task 12 : SCALE the generic measured kinematics
+%--------------------------------------------------------------------------
+elseif isequal(task, 'SCALE KINEMATICS')
+    CBScript = ['SSDATA = SUBJECT_TOOL_Scale_Measurements(SGUIHandle, SSDATA);',...
+                 'disp(''The measured kinematics were scaled.'');'];           
+           
+%--------------------------------------------------------------------------
+% Task 12 : Help
+% Displays a help message in the command window when the help menu option
+% is clicked.
+%--------------------------------------------------------------------------
+elseif isequal(task, 'Help')
+    CBScript = [...
+        'sprintf([''------------- INTERFACE FOR SUBJECT SPECIFIC TOOLBOX -----------------\n'',',...
+        ' ''This GUI helps you adapt the generic model to a specific subject.\n'',',...
+        ' ''You can do certain things that I am going explain later.\n'',',...
+        ' ''details 1: PCSA\n'',',...
+        ' ''details 2: glenoid orientation, what each angle means?\n'', ',...
+        ' ''details 3: the kinematic data and the characteristics of the uploaded file\n'',',...
+        ' ''\n'',',...
+        ' ''\n'','...
+        ' '''']);',...
+        'disp(ans);'];
+    
+%--------------------------------------------------------------------------
+% Throw an error if task is not valid
+%--------------------------------------------------------------------------
+else
+    % Throw an error. No valid task was given
+    ErrorMsg = [...
+        'The user supplied task is not valid.',...
+        'SUBJECT_SPECIFIC_TOOL_script_generator requires a valid task as input.\n',...
+        'Try the Following : \n',...
+        '1) Close the Tool,\n',...
+        '2) ,\n',...
+        '3) ,\n',...
+        '4) ,\n',... 
+        '5) ,\n',...
+        '6) ,\n',...
+        '7) .'];
+    error('ScptGen:ErrorMsg', ErrorMsg);
+end
+
+
+return;

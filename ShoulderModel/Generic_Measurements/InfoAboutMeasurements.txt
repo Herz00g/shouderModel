@@ -1,0 +1,12 @@
+act1: abduction frontal plane with 2 kg
+act2: elevation sagittal plane with 2 kg
+act3: abduction scapula plane with 2 kg
+act4: fast abduction scapula plane
+act5: slow abduction scapula plane
+act6: put 2 kg in a shelf at head height
+act7: hand behind the head
+act8: touch the other shoulder
+act9: french canes
+act10: counter external rotation (static pose, no motion)
+act11: counter internal rotation (static pose, no motion)
+act12: french cranes second try
