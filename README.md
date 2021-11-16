@@ -39,6 +39,7 @@ This folder contains the musculoskeletal model of the human shoulder and elbow t
 
 These models are described in the following journal articles.
 
+* Sarshari E, Boulanaache Y, Terrier A, Farron A, Mullhaupt P, Pioletti D. A Matlab toolbox for scaled-generic modeling of shoulder and elbow. Sci Rep. 2021 Dec;11(1):20806. DOI: https://doi.org/10.1038/s41598-021-99856-y
 
 * Sarshari, E., Mancuso, M., Terrier, A., Farron, A., Mullhaupt, P., Pioletti, D., 2020. Muscle co-contraction in an upper limb musculoskeletal model: EMG-assisted vs. standard load-sharing. Computer Methods in Biomechanics and Biomedical Engineering 1–14. DOI: https://doi.org/10.1080/10255842.2020.1814755
 
